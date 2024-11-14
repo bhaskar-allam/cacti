@@ -1,4 +1,4 @@
-FROM docker:20.10.3-dind
+FROM docker:20.10.24-dind
 
 RUN apk update
 RUN apk add py-pip python3-dev libffi-dev openssl-dev gcc libc-dev make
