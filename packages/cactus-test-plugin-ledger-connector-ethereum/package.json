@@ -50,13 +50,13 @@
     "webpack:dev:web": "webpack --env=dev --target=web --config ../../webpack.config.js"
   },
   "dependencies": {
-    "@hyperledger/cactus-cmd-api-server": "2.0.0",
+    "@hyperledger/cactus-cmd-api-server": "0.2.0",
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
-    "@hyperledger/cactus-plugin-keychain-memory": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
+    "@hyperledger/cactus-plugin-keychain-memory": "0.2.0",
     "@hyperledger/cactus-plugin-ledger-connector-ethereum": "2.0.0",
-    "@hyperledger/cactus-verifier-client": "2.0.0",
+    "@hyperledger/cactus-verifier-client": "1.0.0",
     "web3-eth-contract": "4.2.0"
   },
   "devDependencies": {
