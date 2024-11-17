@@ -19,7 +19,7 @@ RUN tar -zcf iroha2.tar.gz iroha2.tar
 # Runtime
 ################################
 
-FROM docker:24.0.5-dind
+FROM docker:24.0.8-dind
 
 ENV APP_ROOT="/app"
 ENV FREEZE_TMP_DIR="/media/docker/"
