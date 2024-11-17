@@ -17,7 +17,7 @@ RUN quorum-dev-quickstart --clientType besu --outputPath ./ --monitoring default
 # docker compose base
 ################################
 
-FROM docker:24.0.5-dind
+FROM docker:24.0.8-dind
 
 ENV ROOT_DIR=/opt/quorum-dev-quickstart
 
