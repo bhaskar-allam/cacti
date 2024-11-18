@@ -1,6 +1,6 @@
 # We need to use the older, more stable v18 here because of
 # https://github.com/docker-library/docker/issues/170
-FROM docker:24.0.5-dind
+FROM docker:24.0.8-dind
 
 ARG FABRIC_VERSION=1.4.8
 ARG CA_VERSION=1.4.9
