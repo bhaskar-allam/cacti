@@ -8,7 +8,7 @@ RUN go build -o simplestate -v .
 
 # Production ready image
 # Pass the binary to the prod image
-FROM alpine:3.11 as prod
+FROM alpine:3.20.3 as prod
 
 COPY --from=build /go/src/github.com/simplestate/simplestate /app/simplestate
 
