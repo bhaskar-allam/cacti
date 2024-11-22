@@ -16,9 +16,11 @@ env:
   RUN_CODE_COVERAGE: true
 jobs:
   ActionLint:
+    needs: check-ci-skip
     uses: ./.github/workflows/actionlint.yaml
   DCI-Lint:
     name: DCI-Lint
+    needs: check-ci-skip
     runs-on: ubuntu-22.04
     steps:
       - id: lint-git-repo
@@ -29,7 +31,15 @@ jobs:
       - name: Get the output response
         run: echo "${{ steps.lint-git-repo.outputs.lint-git-repo-response }}"
 
+  check-ci-skip:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4.1.7
+      - name: Check CI Skip
+        run: node tools/ci-skip-for-maintainers.js ${{ github.event.pull_request.url }} ${{ github.event.pull_request.user.login }}
+
   check-coverage:
+    needs: check-ci-skip
     outputs:
       run-coverage: ${{ steps.set-output.outputs.run-coverage }}
     runs-on: ubuntu-22.04
@@ -40,6 +50,7 @@ jobs:
         run: echo "run-coverage=${{ env.RUN_CODE_COVERAGE }}" >> "$GITHUB_OUTPUT"
 
   compute_changed_packages:
+    needs: check-ci-skip
     outputs:
       cmd-api-server-changed: ${{ steps.changes.outputs.cmd-api-server-changed }}
       plugin-ledger-connector-polkadot-changed: ${{ steps.changes.outputs.plugin-ledger-connector-polkadot-changed }}
@@ -53,6 +64,7 @@ jobs:
       plugin-htlc-coordinator-besu-changed: ${{ steps.changes.outputs.plugin-htlc-coordinator-besu-changed }}
       test-tooling-changed: ${{ steps.changes.outputs.test-tooling-changed }}
       ghcr-dev-container-vscode-changed: ${{ steps.changes.outputs.ghcr-dev-container-vscode-changed }}
+      plugin-copm-fabric-changed: ${{ steps.changes.outputs.plugin-copm-fabric-changed }}
     runs-on: ubuntu-22.04
     steps:
       - uses: actions/checkout@v4.1.7
@@ -163,7 +175,12 @@ jobs:
               - './packages/cactus-plugin-keychain-memory/**'
               # - './.github/workflows/ci.yaml'
 
+            plugin-copm-fabric-changed:
+              - './packages/cacti-copm-common/**'
+              - './packages/cacti-plugin-copm-fabric/**'
+
   build-dev:
+    needs: check-ci-skip
     continue-on-error: false
     env:
       DEV_BUILD_DISABLED: false
@@ -437,7 +454,7 @@ jobs:
       JEST_TEST_COVERAGE_PATH: ./code-coverage-ts/cactus-cmd-api-server
       JEST_TEST_CODE_COVERAGE_ENABLED: true
       TAPE_TEST_PATTERN: >-
-        --files={./packages/cactus-cmd-api-server/src/test/typescript/unit/config/self-signed-certificate-generator/certificates-work-for-mutual-tls.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/config/self-signed-certificate-generator/generates-working-certificates.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/grpc-js-proto-loader-client-healthcheck.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/grpc-proto-gen-ts-client-healthcheck.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/grpc-proto-gen-ts-client-m-tls-enabled.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/plugins/install-basic-plugin-ledger-connector-fabric-0-7-0.test.ts}
+        --files={./packages/cactus-cmd-api-server/src/test/typescript/unit/config/self-signed-certificate-generator/certificates-work-for-mutual-tls.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/config/self-signed-certificate-generator/generates-working-certificates.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/grpc-js-proto-loader-client-healthcheck.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/grpc-proto-gen-ts-client-m-tls-enabled.test.ts,./packages/cactus-cmd-api-server/src/test/typescript/unit/plugins/install-basic-plugin-ledger-connector-fabric-0-7-0.test.ts}
       TAPE_TEST_RUNNER_DISABLED: false
     runs-on: ubuntu-22.04
     steps:
@@ -1450,6 +1467,14 @@ jobs:
           name: coverage-reports-27
           path: ./code-coverage-ts/**/
 
+  copm-tests:
+    needs: 
+      - build-dev
+      - compute_changed_packages
+    if: needs.compute_changed_packages.outputs.plugin-copm-fabric-changed == 'true'
+    uses: ./.github/workflows/test_copm.yaml
+        
+
   plc-fabric-0:
     needs:
       - build-dev
@@ -1489,369 +1514,6 @@ jobs:
         with:
           name: coverage-reports-28
           path: ./code-coverage-ts/**/
-
-  plc-fabric-1:
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    continue-on-error: false
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/fabric-v2-2-x/deploy-cc-from-javascript-source.test.ts
-
-  plc-fabric-2:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/fabric-v2-2-x/deploy-cc-from-typescript-source.test.ts
-
-  plc-fabric-4:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/openapi/openapi-validation.test.ts
-
-  plc-fabric-5:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/openapi/openapi-validation-go.test.ts
-
-  plc-fabric-6:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/unit/identity-internal-crypto-utils.test.ts
-
-  plc-fabric-7:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/identity-client.test.ts
-
-  plc-fabric-8:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/fabric-v2-2-x/run-transaction-with-identities.test.ts
-
-  plc-fabric-9:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/fabric-v2-2-x/obtain-profiles.test.ts
-
-  plc-fabric-10:
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    continue-on-error: false
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/fabric-v2-2-x/deploy-cc-from-golang-source.test.ts
-
-  plc-fabric-11:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn ts-node ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/fabric-v2-2-x/add-orgs.test.ts
-
-  plc-fabric-12:
-    continue-on-error: false
-    needs:
-      - build-dev
-      - compute_changed_packages
-    if: needs.compute_changed_packages.outputs.plugin-ledger-connector-fabric-changed == 'true'
-    env:
-      CACTI_NPM_PACKAGE_NAME: "@hyperledger/cactus-plugin-ledger-connector-fabric"
-      HFC_LOGGING: '{"debug":"console","info":"console","warn": "console","error":"console"}'
-      FULL_BUILD_DISABLED: true
-      JEST_TEST_PATTERN: packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/(unit|integration|benchmark)/.*/*.test.ts
-      JEST_TEST_RUNNER_DISABLED: true
-      TAPE_TEST_PATTERN: ""
-      TAPE_TEST_RUNNER_DISABLED: true
-    runs-on: ubuntu-22.04
-    steps:
-      - name: Use Node.js ${{ env.NODEJS_VERSION }}
-        uses: actions/setup-node@v4.0.3
-        with:
-          node-version: ${{ env.NODEJS_VERSION }}
-      - uses: actions/checkout@v4.1.7
-
-      - id: yarn-cache
-        name: Restore Yarn Cache
-        uses: actions/cache@v4.0.2
-        with:
-          key: ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-          path: ./.yarn/
-          restore-keys: |
-            ${{ runner.os }}-yarn-${{ hashFiles('./yarn.lock') }}
-      - run: npm run configure
-      - run: yarn jest ./packages/cactus-plugin-ledger-connector-fabric/src/test/typescript/integration/fabric-v2-2-x/run-transaction-with-ws-ids.test.ts
 
   cplc-iroha2:
     continue-on-error: false
@@ -2381,7 +2043,7 @@ jobs:
       JEST_TEST_COVERAGE_PATH: ./code-coverage-ts/ctp-ledger-connector-besu
       JEST_TEST_CODE_COVERAGE_ENABLED: true
       TAPE_TEST_PATTERN: >-
-        --files={./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/get-block-endpoint.test.ts,./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/get-past-logs-endpoint.test.ts,./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/get-transaction-endpoint.test.ts,./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/v21-get-block-endpoint.test.ts,./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/v21-get-past-logs-endpoint.test.ts}
+        --files={./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/get-block-endpoint.test.ts,./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/get-past-logs-endpoint.test.ts,./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/get-transaction-endpoint.test.ts,./packages/cactus-test-plugin-ledger-connector-besu/src/test/typescript/integration/plugin-validator-besu/v21-get-block-endpoint.test.ts}
       TAPE_TEST_RUNNER_DISABLED: false
     runs-on: ubuntu-22.04
     steps:
@@ -2627,6 +2289,7 @@ jobs:
           ignore-unfixed: false
           vuln-type: 'os,library'
           severity: 'CRITICAL,HIGH'
+
 name: Cactus_CI
 'on':
   pull_request:
