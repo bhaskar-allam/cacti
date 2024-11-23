@@ -58,8 +58,8 @@
   },
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
     "axios": "1.7.7",
     "express": "4.21.0",
     "express-openapi-validator": "5.2.0",
