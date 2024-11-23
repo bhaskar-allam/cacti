@@ -1,4 +1,4 @@
-FROM docker:24.0.2-dind
+FROM docker:24.0.8-dind
 
 WORKDIR /
 
