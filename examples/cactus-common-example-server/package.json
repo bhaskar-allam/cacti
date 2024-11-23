@@ -43,7 +43,7 @@
   },
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
     "@types/node": "18.11.9",
     "body-parser": "1.20.3",
     "config": "3.3.7",
