@@ -66,8 +66,8 @@
   },
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
     "@polkadot/api": "10.9.1",
     "@polkadot/api-contract": "10.9.1",
     "@polkadot/rpc-provider": "10.9.1",
