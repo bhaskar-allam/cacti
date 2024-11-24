@@ -16,9 +16,9 @@
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
     "@hyperledger/cactus-common-example-server": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
-    "@hyperledger/cactus-plugin-keychain-memory": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
+    "@hyperledger/cactus-plugin-keychain-memory": "0.2.0",
     "@hyperledger/cactus-plugin-ledger-connector-ethereum": "2.0.0",
     "@hyperledger/cactus-plugin-ledger-connector-sawtooth": "2.0.0",
     "@types/node": "18.11.9",
