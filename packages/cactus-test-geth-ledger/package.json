@@ -51,7 +51,7 @@
   },
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-test-tooling": "2.0.0",
+    "@hyperledger/cactus-test-tooling": "0.2.0",
     "dockerode": "3.3.0",
     "internal-ip": "6.2.0",
     "run-time-error-cjs": "1.4.0",
