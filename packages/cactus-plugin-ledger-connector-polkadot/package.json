@@ -66,7 +66,7 @@
   },
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
     "@hyperledger/cactus-core-api": "2.0.0",
     "@polkadot/api": "10.9.1",
     "@polkadot/api-contract": "10.9.1",
@@ -75,7 +75,7 @@
     "@polkadot/util": "12.6.2",
     "axios": "1.7.7",
     "bl": "6.0.16",
-    "express": "4.21.0",
+    "express": "4.21.2",
     "express-openapi-validator": "5.2.0",
     "form-data": "4.0.0",
     "fs-extra": "11.2.0",
