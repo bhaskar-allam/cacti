@@ -47,18 +47,18 @@
   },
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
     "@hyperledger/cactus-core-api": "2.0.0",
     "@hyperledger/cactus-plugin-ledger-connector-ethereum": "2.0.0",
     "@hyperledger/cactus-test-geth-ledger": "2.0.0",
-    "@hyperledger/cactus-test-tooling": "2.0.0",
+    "@hyperledger/cactus-test-tooling": "0.2.0",
     "@hyperledger/cactus-verifier-client": "2.0.0",
     "body-parser": "1.20.3",
-    "express": "4.21.0",
+    "express": "4.21.2",
     "log4js": "6.4.1",
     "socket.io": "4.6.2",
     "uuid": "10.0.0",
-    "web3": "1.7.3",
+    "web3": "4.0.1",
     "web3-core": "1.7.3"
   },
   "devDependencies": {
