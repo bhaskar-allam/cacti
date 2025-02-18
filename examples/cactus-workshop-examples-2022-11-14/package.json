@@ -58,7 +58,7 @@
     "@hyperledger/cactus-core": "2.0.0",
     "@hyperledger/cactus-core-api": "2.0.0",
     "@hyperledger/cactus-test-tooling": "2.0.0",
-    "kubo-rpc-client": "3.0.1",
+    "kubo-rpc-client": "4.0.0",
     "typescript-optional": "2.0.1",
     "uuid": "10.0.0"
   },
