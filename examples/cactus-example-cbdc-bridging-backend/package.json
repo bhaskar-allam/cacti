@@ -55,14 +55,14 @@
     "webpack:dev:web": "webpack --env=dev --target=web --config ../../webpack.config.js"
   },
   "dependencies": {
-    "@hyperledger/cactus-api-client": "2.0.0",
+    "@hyperledger/cactus-api-client": "0.2.0",
     "@hyperledger/cactus-cmd-api-server": "0.2.0",
     "@hyperledger/cactus-common": "2.0.0",
     "@hyperledger/cactus-core": "0.2.0",
     "@hyperledger/cactus-core-api": "0.2.0",
     "@hyperledger/cactus-plugin-keychain-memory": "0.2.0",
     "@hyperledger/cactus-plugin-ledger-connector-besu": "2.0.0",
-    "@hyperledger/cactus-plugin-ledger-connector-fabric": "2.0.0",
+    "@hyperledger/cactus-plugin-ledger-connector-fabric": "0.2.0",
     "@hyperledger/cactus-plugin-ledger-connector-xdai": "0.5.0",
     "@hyperledger/cactus-plugin-object-store-ipfs": "2.0.0",
     "@hyperledger/cactus-plugin-satp-hermes": "2.0.0",
