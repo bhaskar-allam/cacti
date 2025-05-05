@@ -58,7 +58,7 @@
     "watch": "npm-watch"
   },
   "dependencies": {
-    "@hyperledger/cactus-cmd-api-server": "2.0.0",
+    "@hyperledger/cactus-cmd-api-server": "0.2.0",
     "@hyperledger/cactus-common": "2.0.0",
     "@hyperledger/cactus-core": "2.0.0",
     "@hyperledger/cactus-core-api": "2.0.0",
