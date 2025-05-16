@@ -56,7 +56,7 @@
     "@hyperledger/cactus-core-api": "2.0.0",
     "@hyperledger/cactus-plugin-keychain-memory": "2.0.0",
     "@hyperledger/cactus-plugin-ledger-connector-ethereum": "2.0.0",
-    "@hyperledger/cactus-verifier-client": "2.0.0",
+    "@hyperledger/cactus-verifier-client": "1.0.0",
     "web3-eth-contract": "4.2.0"
   },
   "devDependencies": {
