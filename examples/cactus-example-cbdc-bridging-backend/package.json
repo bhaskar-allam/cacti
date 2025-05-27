@@ -55,7 +55,7 @@
     "webpack:dev:web": "webpack --env=dev --target=web --config ../../webpack.config.js"
   },
   "dependencies": {
-    "@hyperledger/cactus-api-client": "2.0.0",
+    "@hyperledger/cactus-api-client": "0.2.0",
     "@hyperledger/cactus-cmd-api-server": "0.2.0",
     "@hyperledger/cactus-common": "2.0.0",
     "@hyperledger/cactus-core": "0.2.0",
