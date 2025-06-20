@@ -1,3 +1,4 @@
 mkdocs-material
 mike
 mkdocs-swagger-ui-tag
+urllib3>=2.5.0 # not directly required, pinned by Snyk to avoid a vulnerability
