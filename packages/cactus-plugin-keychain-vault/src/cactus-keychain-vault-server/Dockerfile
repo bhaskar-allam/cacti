@@ -10,7 +10,7 @@ WORKDIR /cactus-keychain-vault-server
 ADD ./rust/gen/ ./
 RUN cargo build --release --example server
 
-FROM ubuntu:24.04
+FROM ubuntu:24.10
 ARG APP=/usr/src/app
 
 
