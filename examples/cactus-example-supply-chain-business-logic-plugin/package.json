@@ -61,7 +61,7 @@
     "@hyperledger/cactus-core-api": "2.0.0",
     "@hyperledger/cactus-plugin-consortium-manual": "2.0.0",
     "@hyperledger/cactus-plugin-keychain-memory": "2.0.0",
-    "@hyperledger/cactus-plugin-ledger-connector-besu": "2.0.0",
+    "@hyperledger/cactus-plugin-ledger-connector-besu": "0.2.0",
     "@hyperledger/cactus-plugin-ledger-connector-fabric": "2.0.0",
     "@hyperledger/cactus-plugin-ledger-connector-xdai": "2.0.0",
     "async-exit-hook": "2.0.1",
