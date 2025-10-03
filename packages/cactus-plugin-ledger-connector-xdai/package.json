@@ -66,8 +66,8 @@
     "run-time-error-cjs": "1.4.0",
     "typescript-optional": "2.0.1",
     "uuid": "10.0.0",
-    "web3": "1.6.1",
-    "web3-eth-contract": "1.6.1",
+    "web3": "4.0.1",
+    "web3-eth-contract": "4.0.1",
     "web3-utils": "1.6.1"
   },
   "devDependencies": {
