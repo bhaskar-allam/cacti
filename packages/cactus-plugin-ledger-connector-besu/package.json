@@ -75,7 +75,7 @@
     "rxjs": "7.8.1",
     "socket.io-client-fixed-types": "4.5.4",
     "typescript-optional": "2.0.1",
-    "web3": "1.6.1",
+    "web3": "4.0.1",
     "web3-core": "1.6.1",
     "web3-eth": "1.6.1",
     "web3-eth-contract": "1.6.1",
