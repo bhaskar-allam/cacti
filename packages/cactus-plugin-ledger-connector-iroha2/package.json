@@ -48,7 +48,7 @@
   },
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
     "@hyperledger/cactus-core-api": "2.0.0",
     "@iroha2/client": "4.0.0",
     "@iroha2/crypto-core": "0.1.1",
