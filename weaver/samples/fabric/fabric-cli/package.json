@@ -44,7 +44,7 @@
     "fabric-ca-client": "2.2.20",
     "fabric-common": "2.2.20",
     "fabric-network": "2.2.20",
-    "gluegun": "5.1.6",
+    "gluegun": "5.2.2",
     "uuid": "10.0.0",
     "winston": "3.10.0"
   },
