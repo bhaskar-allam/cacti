@@ -15,7 +15,7 @@
     "ethereumjs-common": "1.5.2",
     "ethereumjs-tx": "2.1.2",
     "ts-node": "9.1.1",
-    "web3": "1.8.1",
+    "web3": "4.0.1",
     "socket.io": "4.6.2"
   },
   "devDependencies": {
