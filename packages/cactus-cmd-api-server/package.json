@@ -66,7 +66,7 @@
     "@connectrpc/connect": "1.4.0",
     "@connectrpc/connect-express": "1.4.0",
     "@connectrpc/connect-fastify": "1.4.0",
-    "@connectrpc/connect-node": "1.4.0",
+    "@connectrpc/connect-node": "2.0.0",
     "@grpc/grpc-js": "1.11.3",
     "@grpc/proto-loader": "0.7.13",
     "@hyperledger/cactus-common": "2.0.0",
