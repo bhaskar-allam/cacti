@@ -16,8 +16,8 @@
   "dependencies": {
     "@hyperledger/cactus-common": "2.0.0",
     "@hyperledger/cactus-common-example-server": "2.0.0",
-    "@hyperledger/cactus-core": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
+    "@hyperledger/cactus-core": "0.2.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
     "@hyperledger/cactus-plugin-keychain-memory": "2.0.0",
     "@hyperledger/cactus-plugin-ledger-connector-ethereum": "2.0.0",
     "@hyperledger/cactus-plugin-ledger-connector-sawtooth": "2.0.0",
@@ -40,7 +40,7 @@
     "socket.io": "4.6.2",
     "ts-node": "8.9.1",
     "uuid": "10.0.0",
-    "web3": "1.8.1",
+    "web3": "4.0.1",
     "xmlhttprequest": "1.8.0"
   },
   "devDependencies": {
