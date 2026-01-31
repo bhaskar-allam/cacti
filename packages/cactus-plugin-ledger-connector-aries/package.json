@@ -66,8 +66,8 @@
     "@hyperledger/aries-askar-nodejs": "0.2.0",
     "@hyperledger/cactus-common": "2.0.0",
     "@hyperledger/cactus-core": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
-    "@hyperledger/indy-vdr-nodejs": "0.2.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
+    "@hyperledger/indy-vdr-nodejs": "0.2.3",
     "axios": "1.7.7",
     "rxjs": "7.8.1",
     "socket.io-client-fixed-types": "4.5.4"
