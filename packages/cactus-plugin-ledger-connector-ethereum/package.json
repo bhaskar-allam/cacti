@@ -70,7 +70,7 @@
     "@ethereumjs/tx": "5.0.0",
     "@hyperledger/cactus-common": "2.0.0",
     "@hyperledger/cactus-core": "2.0.0",
-    "@hyperledger/cactus-core-api": "2.0.0",
+    "@hyperledger/cactus-core-api": "0.2.0",
     "axios": "1.7.7",
     "ethers": "6.8.1",
     "express": "4.21.0",
